@@ -1,5 +1,6 @@
 .DS_Store
-
+files/input/ 
+# OJO con esta linea!!!
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

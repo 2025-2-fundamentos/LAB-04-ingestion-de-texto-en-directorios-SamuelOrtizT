@@ -4,7 +4,9 @@
 """
 Escriba el codigo que ejecute la accion solicitada en cada pregunta.
 """
-
+import glob
+import os
+import pandas as pd
 
 def pregunta_01():
     """
@@ -71,3 +73,48 @@ def pregunta_01():
 
 
     """
+
+    def read_data(input_folder, sentiment):
+        data = []
+        files = glob.glob(f"{input_folder}*")
+        for file in files:
+            with open(file, "r", encoding="utf-8") as f:
+                line = f.readline()
+                data.append((line, sentiment))
+
+        return data
+
+    folder_routes = ["files/input/test/negative/",
+                     "files/input/test/neutral/", 
+                     "files/input/test/positive/",
+                     "files/input/train/negative/", 
+                     "files/input/train/neutral/", 
+                     "files/input/train/positive/"]
+
+    complete_data_test = []
+    complete_data_train = []
+    counter = 0
+    for folder in folder_routes:
+        counter += 1
+        sentiment = folder.split("/")[3]
+        data = read_data(folder, sentiment)
+        if counter <= 3:
+            complete_data_test += data
+        else:
+            complete_data_train += data
+
+    df_test = pd.DataFrame(complete_data_test, columns=["phrase", "target"])
+    df_train = pd.DataFrame(complete_data_train, columns=["phrase", "target"])
+
+    directory = "files/output/"
+    if os.path.exists(directory):
+        for file in glob.glob(f"{directory}/*"):
+            os.remove(file)
+    else:
+        os.makedirs(directory)
+
+    df_test.to_csv("files/output/test_dataset.csv", sep=",", header=True, index=False)
+    df_train.to_csv("files/output/train_dataset.csv", sep=",", header=True, index=False)
+
+if __name__ == "__main__":
+    pregunta_01()
